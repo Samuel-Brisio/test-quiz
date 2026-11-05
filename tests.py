@@ -146,3 +146,32 @@ def test_correct_selected_choices_exceed_max_selections():
             choice2.id,
             choice3.id
         ])
+
+@pytest.fixture
+def question_with_choices():
+    question = Question(title='What is 2 + 2?', max_selections=2)
+
+    choice1 = question.add_choice('3')
+    choice2 = question.add_choice('4', is_correct=True)
+    choice3 = question.add_choice('5')
+    return question, choice1, choice2, choice3
+
+def test_correct_selected_choices_with_fixture(question_with_choices):
+    question, choice1, choice2, choice3 = question_with_choices
+
+    result = question.correct_selected_choices([
+        choice1.id,
+        choice2.id
+    ])
+
+    assert result == [choice2.id]
+
+def test_remove_choice_with_fixture(question_with_choices):
+    question, choice1, choice2, choice3 = question_with_choices
+
+    question.remove_choice_by_id(choice1.id)
+
+    assert len(question.choices) == 2
+    assert choice1 not in question.choices
+    assert choice2 in question.choices
+    assert choice3 in question.choices
